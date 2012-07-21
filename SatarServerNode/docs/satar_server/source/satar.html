@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='SATAR'>/**
+</span> * @class SATAR
+ * @extends Object
+ * @singleton
+ * @author Aron Homberg &lt;info@aron-homberg.de&gt;
+ *
+ * Satar node.js main class.
+ */
+var SATAR = {
+
+
+<span id='SATAR-css_var-Server'>    /**
+</span>     * @var {String} Server version
+     */
+    version: '0.4',
+
+
+<span id='SATAR-css_var-Required'>    /**
+</span>     * @var {Array} Required lib files, autoloaded
+     */
+    requires: [{
+        name: 'node_EventObserver',
+        file: './lib/node/EventObserver.js'
+    }, {
+        name: 'web_NodeService',
+        file: './lib/web/NodeService.js'
+    }, {
+        name: 'web_Server',
+        file: './lib/web/Server.js'
+    }, {
+        name: 'race_Manager',
+        file: './lib/race/Manager.js'
+    }],
+
+
+<span id='SATAR-css_var-Node'>    /**
+</span>     * @var {hook} Node hook
+     */
+    nodeHook: null,
+
+
+<span id='SATAR-css_var-Race'>    /**
+</span>     * @var {SATAR.race.Manager} Race manager instance
+     */
+    raceManager: null,
+
+
+<span id='SATAR-method-printLogo'>    /**
+</span>     * Prints logo
+     * @return void
+     */
+    printLogo: function() {
+
+        console.log('');
+        console.log('      ____      ____    _____    ____      ____ CC ');
+        console.log('  ___(_ (_`____/ () \\__|_   _|__/ () \\____| () )_____   ');
+        console.log('    .__)__)   /__/\\__\\   |_|   /__/\\__\\   |_|\\_\\');
+        console.log('  System for Advanced Timekeeping and Amateur Racing.');
+        console.log('');
+    },
+
+
+<span id='SATAR-method-printVersion'>    /**
+</span>     * Prints version info
+     * @return void
+     */
+    printVersion: function() {
+
+        console.log('  version: ' + this.version);
+    },
+
+
+<span id='SATAR-method-requireLibs'>    /**
+</span>     * Autoloads all required libs
+     * @return void
+     */
+    requireLibs: function() {
+
+        for (var i=0; i&lt;this.requires.length; i++) {
+            this[this.requires[i].name] = require(this.requires[i].file);
+        }
+    },
+
+
+<span id='SATAR-method-launch'>    /**
+</span>     * Launch the server instances and broadcast hooks
+     * @return void
+     */
+    launch: function() {
+
+        try {
+
+            console.log();
+
+            SATAR.requireLibs();
+
+            this.printStartupMessage();
+
+            console.log();
+
+            this.initRaceManager();
+            this.initIOHook();
+            this.initNodeEventObserver();
+            this.initWebServer();
+
+            console.log();
+            console.log('  [OK] SATAR startup successful!');
+            console.log();
+
+            console.log('----- Log Output -----');
+
+        } catch (e) {
+
+            console.log();
+            console.error('  [ERR] SATAR startup failed!', e);
+        }
+    },
+
+
+<span id='SATAR-method-printStartupMessage'>    /**
+</span>     * Prints the startup message when server gets executed
+     * @return void
+     */
+    printStartupMessage: function() {
+
+        this.printLogo();
+        this.printVersion();
+
+        console.log();
+
+        console.log('SATAR server starting...');
+    },
+
+
+<span id='SATAR-method-initRaceManager'>    /**
+</span>     * Creates a race manager instance
+     * @return void
+     */
+    initRaceManager: function() {
+
+        console.log('  * Starting race manager...');
+
+        // Initialize the NodeService web service
+        SATAR.race_Manager.init();
+    },
+
+
+<span id='SATAR-method-initIOHook'>    /**
+</span>     * Creates the async inter-process broadcast hook used to interact with incoming
+     * @return void
+     */
+    initIOHook: function() {
+
+        console.log('  * Registering system-wide async eventing using hook.io...');
+
+        // Initialize the EventObserver for node events
+        this.nodeHook = SATAR.node_EventObserver.init(SATAR.race_Manager);
+
+        // Set the hook reference
+        SATAR.race_Manager.setHook(this.nodeHook);
+    },
+
+
+<span id='SATAR-method-initNodeEventObserver'>    /**
+</span>     * Creates the express based web service to handle incoming node events.
+     * @return void
+     */
+    initNodeEventObserver: function() {
+
+        console.log('  * Starting node event web service...');
+
+        // Initialize the NodeService web service
+        SATAR.web_NodeService.init(this.nodeHook, SATAR.race_Manager);
+    },
+
+
+<span id='SATAR-method-initWebServer'>    /**
+</span>     * Create the express based web server for UI serving
+     * @private
+     * @return void
+     */
+    initWebServer: function() {
+
+        console.log('  * Starting UI web server...');
+
+        // Initialize the NodeService web service
+        SATAR.web_Server.init(this.nodeHook, SATAR.race_Manager);
+    }
+};
+
+// Start the server
+SATAR.launch();</pre>
+</body>
+</html>

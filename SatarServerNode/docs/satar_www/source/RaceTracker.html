@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.ns('SATAR');
+
+<span id='SATAR-RaceTracker'>/**
+</span> * @class SATAR.RaceTracker
+ * @singleton
+ * @extends Object
+ * @author Aron Homberg &lt;info@aron-homberg.de&gt;
+ *
+ * RaceTracker UI management.
+ */
+SATAR.RaceTracker = {
+
+
+<span id='SATAR-RaceTracker-css_var-Start'>    /**
+</span>     * @var {Ext.Element} Start button reference
+     */
+    startRaceButton: null,
+
+
+<span id='SATAR-RaceTracker-css_var-Stop'>    /**
+</span>     * @var {Ext.Element} Stop button reference
+     */
+    stopRaceButton: null,
+
+
+<span id='SATAR-RaceTracker-css_var-Started'>    /**
+</span>     * @var {Ext.Element} Started box reference
+     */
+    startedBox: null,
+
+
+<span id='SATAR-RaceTracker-css_var-Finished'>    /**
+</span>     * @var {Ext.Element} Finished box reference
+     */
+    finishedBox: null,
+
+
+<span id='SATAR-RaceTracker-cfg-Is'>    /**
+</span>     * @cfg {Boolean} Is a race currently started?
+     */
+    isRaceStarted: false,
+
+
+<span id='SATAR-RaceTracker-css_var-Current'>    /**
+</span>     * @var {String} Current race name
+     */
+    currentRaceName: '',
+
+
+<span id='SATAR-RaceTracker-method-handleUI'>    /**
+</span>     * Simple event management handler
+     * @return void
+     */
+    handleUI: function() {
+
+        this.startRaceButton = Ext.select('#startRace');
+        this.stopRaceButton = Ext.select('#stopRace');
+
+        this.startedBox = Ext.query('#startedBox')[0];
+        this.finishedBox = Ext.query('#finishedBox')[0];
+
+        // Button click listener
+        this.startRaceButton.on('click',
+            this.onStartRaceClick,
+            this
+        );
+
+        this.stopRaceButton.on('click',
+            this.onStopRaceClick,
+            this
+        );
+    },
+
+
+<span id='SATAR-RaceTracker-method-onStartRaceClick'>    /**
+</span>     * Handle start button click
+     * @param {Boolean} preventAction Prevent action (optional)
+     * @return void
+     */
+    onStartRaceClick: function(preventAction) {
+
+        if (!this.startRaceButton.disabled) {
+
+            this.startRaceButton.disabled = true;
+            this.stopRaceButton.disabled = false;
+
+            if (preventAction !== true) {
+                this.doStartRace();
+            }
+
+            this.isRaceStarted = true;
+
+            // Attention to the stop button
+            this.startRaceButton.addClass('disabled');
+            this.stopRaceButton.removeClass('disabled');
+        }
+    },
+
+
+<span id='SATAR-RaceTracker-method-onStopRaceClick'>    /**
+</span>     * Handle stop button click
+     * @param {Boolean} preventAction Prevent action (optional)
+     * @return void
+     */
+    onStopRaceClick: function(preventAction) {
+
+        if (!this.stopRaceButton.disabled &amp;&amp; this.isRaceStarted) {
+
+            this.stopRaceButton.disabled = true;
+            this.startRaceButton.disabled = false;
+
+            if (preventAction !== true) {
+                this.doStopRace();
+            }
+
+            this.isRaceStarted = false;
+
+            // Attention to the stop button
+            this.stopRaceButton.addClass('disabled');
+            this.startRaceButton.removeClass('disabled');
+        }
+    },
+
+
+<span id='SATAR-RaceTracker-method-addNode'>    /**
+</span>     * Adds a node visually to the UI
+     * @param {Object} nodeEvent Node event object
+     * @return void
+     */
+    addNode: function(nodeEvent) {
+
+        // Only add node if race has been started
+        if (this.isRaceStarted) {
+
+            var targetEl, targetEl,
+                nodeElId = 'node-' + nodeEvent.id;
+
+            // Add to start box
+            if (nodeEvent.type === SATAR.eventTypes.START) {
+
+                targetEl = this.startedBox;
+                mode = 'started';
+
+            } else if (nodeEvent.type === SATAR.eventTypes.STOP) {
+
+                targetEl = this.finishedBox;
+                mode = 'finished';
+
+            } else {
+
+                //console.debug('Event type cannot be recognized: ', nodeEvent);
+                return;
+            }
+
+            // Append node to DOM
+            Ext.DomHelper.append(targetEl,
+                this.buildNodeElement(nodeEvent, nodeElId, mode)
+            );
+
+            // Append popover to node in DOM
+            SATAR.RaceTracker.buildPopover(nodeEvent, nodeElId, mode);
+
+            // Fade in...
+            Ext.get(nodeElId).fadeIn();
+        }
+    },
+
+
+<span id='SATAR-RaceTracker-method-buildNodeElement'>    /**
+</span>     * Generates an DOM element description for a node
+     * @param {Object} nodeEvent Node element
+     * @param {String} elId Element id
+     * @param {String} mode Mode name
+     * @return {Object}
+     */
+    buildNodeElement: function(nodeEvent, elId, mode) {
+
+        var btnCls = '';
+
+        if (mode == 'finished') {
+            btnCls = 'btn-success';
+        }
+
+        var nodeEl = {
+            tag: 'button',
+            id: elId,
+            cls: 'satarnode btn ' + btnCls + ' btn-large disabled icon-user',
+            style: 'display:none',
+            html: '&lt;i class=&quot;icon-user icon-white&quot;&gt;&lt;/i&gt; '
+                + SATAR.getNameForParticipant(nodeEvent.participant_id)
+                + ' (' + nodeEvent.participant_id + ')'
+        };
+
+        return nodeEl;
+    },
+
+
+<span id='SATAR-RaceTracker-method-buildPopover'>    /**
+</span>     * Registers a popover for the participant's button
+     * @param {Object} nodeEvent Node element
+     * @param {String} elId Element id
+     * @param {String} mode Mode name
+     * @return void
+     */
+    buildPopover: function(nodeEvent, elId, mode) {
+
+        var additionalRow = '';
+        if (mode == 'finished') {
+
+            var timeElapsed = 'Keine Startzeit gefunden.';
+            if (nodeEvent.timeelapsed_startfinish) {
+                timeElapsed = nodeEvent.timeelapsed_startfinish / 1000 + ' Sek';
+            }
+            additionalRow = '&lt;tr&gt;&lt;td&gt;Dauer:&lt;/td&gt;&lt;td&gt;' + timeElapsed + '&lt;/td&gt;&lt;/tr&gt;';
+        }
+
+        var options = {
+            title: 'Details',
+            content:
+                  '&lt;table class=&quot;table&quot;&gt;'
+                + '&lt;tr&gt;&lt;td&gt;Teilnehmer-Nummer:&lt;/td&gt;&lt;td&gt;' + nodeEvent.participant_id + '&lt;/td&gt;&lt;/tr&gt;'
+                + '&lt;tr&gt;&lt;td&gt;Wegpunkt-Nummer:&lt;/td&gt;&lt;td&gt;' + nodeEvent.node_id + '&lt;/td&gt;&lt;/tr&gt;'
+                + '&lt;tr&gt;&lt;td&gt;Zeitpunkt:&lt;/td&gt;&lt;td&gt;'
+                +     SATAR.RaceTracker.formatTimestamp(nodeEvent.timestamp)
+                + '&lt;/td&gt;&lt;/tr&gt;'
+                + additionalRow
+                + '&lt;/table&gt;'
+        };
+
+        // Assign popover
+        $('#' + elId).popover(options);
+    },
+
+
+<span id='SATAR-RaceTracker-method-formatTimestamp'>    /**
+</span>     * Formats a timestamp and returns a nice time
+     * @param {Number} timestamp Timestamp
+     * @return {String}
+     */
+    formatTimestamp: function(timestamp) {
+
+        var date = new Date(timestamp),
+            hours = date.getHours(),
+            minutes = date.getMinutes(),
+            seconds = date.getSeconds(),
+            millis = date.getMilliseconds();
+
+        return hours + ':' + minutes + ':' + seconds + ':' + millis;
+    },
+
+
+<span id='SATAR-RaceTracker-method-doStartRace'>    /**
+</span>     * Starts a race
+     * @return void
+     */
+    doStartRace: function() {
+
+        var me = this;
+
+        // Cleanup boxes
+        Ext.get(this.startedBox).update('');
+        Ext.get(this.finishedBox).update('');
+
+        // Prompt the user to enter race name
+        bootbox.prompt(&quot;Bitte geben Sie den Namen des Rennens ein:&quot;, function(raceName) {
+
+            if (!raceName || raceName == '') {
+
+                me.onStopRaceClick(true);
+
+            } else {
+
+                // Set race name
+                me.updateRaceName(raceName);
+
+                // Emit startrace event
+                SATAR.socket.emit('racestarted', {
+                    name: raceName
+                });
+
+                // Fades in the current race data section
+                Ext.get('currentRaceData').fadeIn();
+            }
+       });
+    },
+
+
+<span id='SATAR-RaceTracker-method-updateRaceName'>    /**
+</span>     * Updates the race name even visually
+     * @param {String} raceName Race name
+     * @return void
+     */
+    updateRaceName: function(raceName) {
+
+        this.currentRaceName = raceName;
+
+        // Set race name
+        Ext.get('raceTitle').update('Rennen: ' + raceName);
+    },
+
+
+<span id='SATAR-RaceTracker-method-applyCurrentRaceState'>    /**
+</span>     * Applies a current race state
+     * @param {Object} currentRaceReport Current race state report
+     * @return void
+     */
+    applyCurrentRaceState: function(currentRaceReport) {
+
+        // Set race name
+        this.updateRaceName(currentRaceReport.race.name);
+
+        // Set buttons in state
+        this.onStartRaceClick(true);
+
+        // Add corresponding nodes
+        for (var i=0; i&lt;currentRaceReport.nodes.length; i++) {
+
+            // Add node to UI
+            this.addNode(currentRaceReport.nodes[i]);
+        }
+
+        // Fades in the current race data section
+        Ext.get('currentRaceData').fadeIn();
+    },
+
+
+<span id='SATAR-RaceTracker-method-doStopRace'>    /**
+</span>     * Starts a race
+     * @return void
+     */
+    doStopRace: function() {
+
+        // Emit startrace event
+        SATAR.socket.emit('racefinished');
+    },
+
+
+<span id='SATAR-RaceTracker-method-init'>    /**
+</span>     * Initialize the UI
+     * @return void
+     */
+    init: function() {
+
+        // Handle UI events
+        this.handleUI();
+    }
+};</pre>
+</body>
+</html>

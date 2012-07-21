@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">// Load and initialize the NodePersistor
+var hookio = require('hook.io'),
+    nodePersistor = require('./EventPersistor.js'),
+    raceManager;
+
+<span id='SATAR-node-EventObserver'>/**
+</span> * @class SATAR.node.EventObserver
+ * @singleton
+ * @extends Object
+ * @author Aron Homberg &lt;info@aron-homberg.de&gt;
+ *
+ * Event observer (system-wide async IO) using hook.io.
+ */
+var EventObserver = {
+
+
+<span id='SATAR-node-EventObserver-css_var-Node'>    /**
+</span>     * @var {Object} Node observer hook
+     */
+    nodeEventHook: null,
+
+
+<span id='SATAR-node-EventObserver-css_var-Node'>    /**
+</span>     * @var {SATAR.node.EventPersistor} Node persistor instance
+     */
+    nodePersistor: null,
+
+
+<span id='SATAR-node-EventObserver-method-init'>    /**
+</span>     * Initialize the global async hook
+     *
+     * @param {SATAR.race.Manager} raceManagerRef Race manager reference
+     * @return void
+     */
+    init: function(raceManagerRef) {
+
+        raceManager = raceManagerRef;
+
+        // Register global node event hook
+        this.nodeEventHook = hookio.createHook({
+            name: 'NodeEventObserver'
+        });
+
+        // Register node event listener
+        this.nodeEventHook.on('node', this.onNodeEvent);
+
+        // Start hooking
+        this.nodeEventHook.start();
+
+        console.log('  [OK] ...registered.');
+
+        // Init node persistor
+        nodePersistor.init(this.nodeEventHook, raceManagerRef);
+
+        // Return the hook reference
+        return this.nodeEventHook;
+    },
+
+
+<span id='SATAR-node-EventObserver-method-onNodeEvent'>    /**
+</span>     * Node event listener that gets called when a new
+     * node event comes in and gets emitted.
+     *
+     * @param {SATAR.event.Node} nodeEvent Node event instance
+     * @return void
+     */
+    onNodeEvent: function(nodeEvent) {
+
+        // Persist the nodeEvent
+        nodePersistor.persistNode(nodeEvent, this.nodeEventHook);
+    }
+};
+
+// Export the initialization method
+module.exports.init = EventObserver.init;
+module.exports.onNodeEvent = EventObserver.onNodeEvent;</pre>
+</body>
+</html>

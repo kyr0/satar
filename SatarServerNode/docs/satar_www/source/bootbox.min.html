@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-bootbox'>/**
+</span> * bootbox.js v2.3.1
+ *
+ * The MIT License
+ *
+ * Copyright (C) 2011-2012 by Nick Payne &lt;nick@kurai.co.uk&gt;
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the &quot;Software&quot;), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE
+ */
+var bootbox=window.bootbox||function(){function j(b,a){null==a&amp;&amp;(a=k);return&quot;string&quot;==typeof h[a][b]?h[a][b]:a!=l?j(b,l):b}var k=&quot;en&quot;,l=&quot;en&quot;,o=!0,g={},f={},h={en:{OK:&quot;OK&quot;,CANCEL:&quot;Cancel&quot;,CONFIRM:&quot;OK&quot;},fr:{OK:&quot;OK&quot;,CANCEL:&quot;Annuler&quot;,CONFIRM:&quot;D'accord&quot;},de:{OK:&quot;OK&quot;,CANCEL:&quot;Abbrechen&quot;,CONFIRM:&quot;Akzeptieren&quot;},es:{OK:&quot;OK&quot;,CANCEL:&quot;Cancelar&quot;,CONFIRM:&quot;Aceptar&quot;},br:{OK:&quot;OK&quot;,CANCEL:&quot;Cancelar&quot;,CONFIRM:&quot;Sim&quot;},nl:{OK:&quot;OK&quot;,CANCEL:&quot;Annuleren&quot;,CONFIRM:&quot;Accepteren&quot;},ru:{OK:&quot;OK&quot;,CANCEL:&quot;\u041e\u0442\u043c\u0435\u043d\u0430&quot;,
+CONFIRM:&quot;\u041f\u0440\u0438\u043c\u0435\u043d\u0438\u0442\u044c&quot;}};f.setLocale=function(b){for(var a in h)if(a==b){k=b;return}throw Error(&quot;Invalid locale: &quot;+b);};f.addLocale=function(b,a){&quot;undefined&quot;==typeof h[b]&amp;&amp;(h[b]={});for(var c in a)h[b][c]=a[c]};f.setIcons=function(b){g=b;if(&quot;object&quot;!==typeof g||null==g)g={}};f.alert=function(){var b=&quot;&quot;,a=j(&quot;OK&quot;),c=null;switch(arguments.length){case 1:b=arguments[0];break;case 2:b=arguments[0];&quot;function&quot;==typeof arguments[1]?c=arguments[1]:a=arguments[1];break;
+case 3:b=arguments[0];a=arguments[1];c=arguments[2];break;default:throw Error(&quot;Incorrect number of arguments: expected 1-3&quot;);}return f.dialog(b,{label:a,icon:g.OK,callback:c},{onEscape:c})};f.confirm=function(){var b=&quot;&quot;,a=j(&quot;CANCEL&quot;),c=j(&quot;CONFIRM&quot;),e=null;switch(arguments.length){case 1:b=arguments[0];break;case 2:b=arguments[0];&quot;function&quot;==typeof arguments[1]?e=arguments[1]:a=arguments[1];break;case 3:b=arguments[0];a=arguments[1];&quot;function&quot;==typeof arguments[2]?e=arguments[2]:c=arguments[2];break;
+case 4:b=arguments[0];a=arguments[1];c=arguments[2];e=arguments[3];break;default:throw Error(&quot;Incorrect number of arguments: expected 1-4&quot;);}return f.dialog(b,[{label:a,icon:g.CANCEL,callback:function(){&quot;function&quot;==typeof e&amp;&amp;e(!1)}},{label:c,icon:g.CONFIRM,callback:function(){&quot;function&quot;==typeof e&amp;&amp;e(!0)}}])};f.prompt=function(){var b=&quot;&quot;,a=j(&quot;CANCEL&quot;),c=j(&quot;CONFIRM&quot;),e=null;switch(arguments.length){case 1:b=arguments[0];break;case 2:b=arguments[0];&quot;function&quot;==typeof arguments[1]?e=arguments[1]:a=arguments[1];
+break;case 3:b=arguments[0];a=arguments[1];&quot;function&quot;==typeof arguments[2]?e=arguments[2]:c=arguments[2];break;case 4:b=arguments[0];a=arguments[1];c=arguments[2];e=arguments[3];break;default:throw Error(&quot;Incorrect number of arguments: expected 1-4&quot;);}var m=$(&quot;&lt;form&gt;&lt;/form&gt;&quot;);m.append(&quot;&lt;input autocomplete=off type=text /&gt;&quot;);var h=f.dialog(m,[{label:a,icon:g.CANCEL,callback:function(){&quot;function&quot;==typeof e&amp;&amp;e(null)}},{label:c,icon:g.CONFIRM,callback:function(){&quot;function&quot;==typeof e&amp;&amp;e(m.find(&quot;input[type=text]&quot;).val())}}],
+{header:b});h.on(&quot;shown&quot;,function(){m.find(&quot;input[type=text]&quot;).focus();m.on(&quot;submit&quot;,function(a){a.preventDefault();h.find(&quot;.btn-primary&quot;).click()})});return h};f.modal=function(){var b,a,c,e={onEscape:null,keyboard:!0,backdrop:!0};switch(arguments.length){case 1:b=arguments[0];break;case 2:b=arguments[0];&quot;object&quot;==typeof arguments[1]?c=arguments[1]:a=arguments[1];break;case 3:b=arguments[0];a=arguments[1];c=arguments[2];break;default:throw Error(&quot;Incorrect number of arguments: expected 1-3&quot;);}e.header=
+a;c=&quot;object&quot;==typeof c?$.extend(e,c):e;return f.dialog(b,[],c)};f.dialog=function(b,a,c){var e=null,f=&quot;&quot;,h=[],c=c||{};null==a?a=[]:&quot;undefined&quot;==typeof a.length&amp;&amp;(a=[a]);for(var d=a.length;d--;){var g=null,j=null,k=&quot;&quot;,l=null;if(&quot;undefined&quot;==typeof a[d].label&amp;&amp;&quot;undefined&quot;==typeof a[d][&quot;class&quot;]&amp;&amp;&quot;undefined&quot;==typeof a[d].callback){var g=0,p=null,n;for(n in a[d])if(p=n,1&lt;++g)break;1==g&amp;&amp;&quot;function&quot;==typeof a[d][n]&amp;&amp;(a[d].label=p,a[d].callback=a[d][n])}&quot;function&quot;==typeof a[d].callback&amp;&amp;(l=a[d].callback);
+a[d][&quot;class&quot;]?j=a[d][&quot;class&quot;]:d==a.length-1&amp;&amp;2&gt;=a.length&amp;&amp;(j=&quot;btn-primary&quot;);g=a[d].label?a[d].label:&quot;Option &quot;+(d+1);a[d].icon&amp;&amp;(k=&quot;&lt;i class='&quot;+a[d].icon+&quot;'&gt;&lt;/i&gt; &quot;);f+=&quot;&lt;a data-handler='&quot;+d+&quot;' class='btn &quot;+j+&quot;' href='#'&gt;&quot;+k+&quot;&quot;+g+&quot;&lt;/a&gt;&quot;;h[d]=l}a=[&quot;&lt;div class='bootbox modal'&gt;&quot;];if(c.header){d=&quot;&quot;;if(&quot;undefined&quot;==typeof c.headerCloseButton||c.headerCloseButton)d=&quot;&lt;a href='#' class='close'&gt;&amp;times;&lt;/a&gt;&quot;;a.push(&quot;&lt;div class='modal-header'&gt;&quot;+d+&quot;&lt;h3&gt;&quot;+c.header+&quot;&lt;/h3&gt;&lt;/div&gt;&quot;)}a.push(&quot;&lt;div class='modal-body'&gt;&lt;/div&gt;&quot;);
+f&amp;&amp;a.push(&quot;&lt;div class='modal-footer'&gt;&quot;+f+&quot;&lt;/div&gt;&quot;);a.push(&quot;&lt;/div&gt;&quot;);var i=$(a.join(&quot;\n&quot;));(&quot;undefined&quot;===typeof c.animate?o:c.animate)&amp;&amp;i.addClass(&quot;fade&quot;);$(&quot;.modal-body&quot;,i).html(b);i.bind(&quot;hidden&quot;,function(){i.remove()});i.bind(&quot;hide&quot;,function(){if(&quot;escape&quot;==e&amp;&amp;&quot;function&quot;==typeof c.onEscape)c.onEscape()});$(document).bind(&quot;keyup.modal&quot;,function(a){27==a.which&amp;&amp;(e=&quot;escape&quot;)});i.bind(&quot;shown&quot;,function(){$(&quot;a.btn-primary:last&quot;,i).focus()});i.on(&quot;click&quot;,&quot;.modal-footer a, a.close&quot;,function(a){var b=$(this).data(&quot;handler&quot;),
+b=h[b],c=null;&quot;function&quot;==typeof b&amp;&amp;(c=b());!1!==c&amp;&amp;(a.preventDefault(),e=&quot;button&quot;,i.modal(&quot;hide&quot;))});null==c.keyboard&amp;&amp;(c.keyboard=&quot;function&quot;==typeof c.onEscape);$(&quot;body&quot;).append(i);i.modal({backdrop:c.backdrop||!0,keyboard:c.keyboard});return i};f.hideAll=function(){$(&quot;.bootbox&quot;).modal(&quot;hide&quot;)};f.animate=function(b){o=b};return f}();
+</pre>
+</body>
+</html>

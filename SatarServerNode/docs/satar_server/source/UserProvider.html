@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">var mysql = require('mysql'),
+    conn, config;
+
+<span id='SATAR-UserProvider'>/**
+</span> * @class SATAR.UserProvider
+ * @singleton
+ * @extends Object
+ * @author Aron Homberg &lt;info@aron-homberg.de&gt;
+ *
+ * User provider which collects user mapping informations from
+ * an external database.
+ */
+var UserProvider = {
+
+<span id='SATAR-UserProvider-method-init'>    /**
+</span>     * Connects to the mysql database
+     * @return void
+     */
+    init: function() {
+
+        config = require('../config.js');
+
+        if (config.userDatabase) {
+
+            // Configure connect to SATAR mysql database
+            conn = mysql.createConnection({
+                host: config.userDatabase.host,
+                port: config.userDatabase.port || 3306,
+                user: config.userDatabase.username,
+                password: config.userDatabase.password
+            });
+
+            // Connect to database
+            conn.connect();
+
+            // Use SATAR database
+            conn.query('USE ' + config.userDatabase.schema);
+
+        } else {
+            console.error('Database configuration for userDatabase is missing. Check config.js.');
+        }
+    }(),
+
+
+<span id='SATAR-UserProvider-method-getUserMapping'>    /**
+</span>     * Returns the user mapping read from external mysql database
+     * @param {Function} cb Callback function for result data
+     * @return {Object}
+     */
+    getUserMapping: function(cb) {
+
+        var selectQuery = 'SELECT * FROM ' + config.userDatabase.tableName;
+
+        // Select user data
+        conn.query(selectQuery, function(err, res) {
+            cb(res);
+        });
+    }
+};
+
+module.exports.getUserMapping = UserProvider.getUserMapping;</pre>
+</body>
+</html>

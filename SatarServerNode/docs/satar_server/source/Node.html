@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='SATAR-event-Node'>/**
+</span> * @class SATAR.event.Node
+ * @extends Object
+ * @author Aron Homberg &lt;info@aron-homberg.de&gt;
+ *
+ * Event object that represents a node event.
+ */
+var Node = function(cfg) {
+
+    // Set-up an node event
+    this.id = cfg.id;
+    this.timestamp = cfg.timestamp;
+    this.reset_timestamp_ms = cfg.reset_timestamp_ms;
+    this.type = cfg.type;
+    this.participant_id = cfg.participant_id;
+    this.node_id = cfg.node_id;
+    this.timeelapsed_startfinish = cfg.timeelapsed_startfinish;
+};
+
+// Default class members
+Node.prototype = {
+    id: undefined,
+    timestamp: undefined,
+    reset_timestamp_ms: undefined,
+    type: undefined,
+    participant_id: undefined,
+    node_id: undefined,
+    timeelapsed_startfinish: undefined
+};
+
+<span id='SATAR-event-Node-method-getInstance'>/**
+</span> * Creates an instance of this node
+ * @param {Object} cfg Event configuration
+ * @return {SATAR.event.Node}
+ */
+Node.getInstance = function(cfg) {
+    return new Node(cfg);
+};
+
+<span id='SATAR-event-Node-method-getTypeMap'>/**
+</span> * Returns the node type map
+ * @return {Object}
+ */
+Node.getTypeMap = function() {
+
+    return {
+        START: 10,
+        FINISH: 20
+    }
+};
+
+// Export the initialization method
+module.exports.getInstance = Node.getInstance;
+module.exports.getTypeMap = Node.getTypeMap;</pre>
+</body>
+</html>

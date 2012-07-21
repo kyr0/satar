@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">var express = require('express'),
+    raceManager, hook;
+
+<span id='SATAR-web-NodeService'>/**
+</span> * @class SATAR.web.NodeService
+ * @singleton
+ * @extends Object
+ * @author Aron Homberg &lt;info@aron-homberg.de&gt;
+ *
+ * Webservice to handle incoming node events.
+ */
+var NodeService = {
+
+
+<span id='SATAR-web-NodeService-css_var-Express'>    /**
+</span>     * @var {Object} Express reference
+     */
+    service: null,
+
+
+<span id='SATAR-web-NodeService-method-init'>    /**
+</span>     * Initialize the global async hook
+     *
+     * @param {Object} nodeHook hook.io reference
+     * @param {SATAR.race.Manager} raceManagerRef Race manager reference
+     * @return void
+     */
+    init: function(nodeHook, raceManagerRef) {
+
+        // Configure hooking
+        hook = nodeHook;
+        raceManager = raceManagerRef;
+
+        // Configure webserver
+        this.service = express.createServer();
+
+        var config = require('../../config.js');
+
+        if (config.nodeService &amp;&amp; config.nodeService.port) {
+
+            // Listen to configured service port
+            this.service.listen(config.nodeService.port);
+
+            console.log('  [OK] ...started.');
+
+        } else {
+
+            console.error('No node service configuration given (port). Check config.js!');
+        }
+
+        // Start webservice
+        this.startListening();
+    },
+
+
+<span id='SATAR-web-NodeService-method-startListening'>    /**
+</span>     * Listens to service API requests
+     * @return void
+     */
+    startListening: function() {
+
+        var me = this;
+
+        // Listen for API requests
+        this.service.get('/ts/:timestamp/rts/:reset_timestamp_ms/t/:type/p/:participant_id/n/:node_id',
+        function(req, res, next) {
+
+            var nodeEvent = require('../event/Node.js');
+
+            // Create a nodeEvent instance
+            var nodeEvent = nodeEvent.getInstance({
+                timestamp: parseInt(req.params.timestamp),
+                reset_timestamp_ms: parseInt(req.params.reset_timestamp_ms),
+                type: parseInt(req.params.type),
+                participant_id: parseInt(req.params.participant_id),
+                node_id: parseInt(req.params.node_id)
+            });
+
+            // Emit nodeEvent
+            hook.emit('node', nodeEvent);
+
+            // Respond 200 OK anytime
+            res.send(true);
+        });
+    }
+};
+
+// Export the initialization method
+module.exports.init = NodeService.init;
+module.exports.startListening = NodeService.startListening;</pre>
+</body>
+</html>

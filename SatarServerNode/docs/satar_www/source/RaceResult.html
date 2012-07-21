@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.ns('SATAR');
+
+<span id='SATAR-RaceResult'>/**
+</span> * @class SATAR.RaceResult
+ * @singleton
+ * @extends Object
+ * @author Aron Homberg &lt;info@aron-homberg.de&gt;
+ *
+ * RaceResult modal window
+ */
+SATAR.RaceResult = {
+
+
+<span id='SATAR-RaceResult-css_var-Race'>    /**
+</span>     * @var {Object} Race report
+     */
+    raceReport: null,
+
+
+<span id='SATAR-RaceResult-method-show'>    /**
+</span>     * Show race result
+     * @param {Object} raceReport Race report
+     * @return void
+     */
+    show: function(raceReport) {
+
+        // Assign locally
+        this.raceReport = raceReport;
+
+        // Generate the HTML report
+        this.generateHtmlReport(raceReport);
+
+        // Show the report
+        $('#modalResult').modal();
+    },
+
+
+<span id='SATAR-RaceResult-method-generateHtmlReport'>    /**
+</span>     * Generates a nice bootstrap table structure
+     * showing the race report.
+     *
+     * @param {Object} raceReport Race report
+     * @return void
+     */
+    generateHtmlReport: function(raceReport) {
+
+        Ext.get('raceReport').update('TODO!');
+    }
+};</pre>
+</body>
+</html>

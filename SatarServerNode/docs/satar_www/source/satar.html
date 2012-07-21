@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">Ext.ns('SATAR');
+
+<span id='SATAR'>/**
+</span> * @class SATAR
+ * @singleton
+ * @author Aron Homberg &lt;info@aron-homberg.de&gt;
+ *
+ * Satar web main class.
+ */
+Ext.apply(SATAR, {
+
+<span id='SATAR-css_var-Event'>    /**
+</span>     * @var {Object} Event type mapping
+     */
+    eventTypes: {
+        START: 10,
+        STOP: 20
+    },
+
+
+<span id='SATAR-css_var-Socket'>    /**
+</span>     * @private
+     * @var {Object} Socket.io reference
+     */
+    socket: null,
+
+
+<span id='SATAR-css_var-User'>    /**
+</span>     * @var {Object} User data mapping (set by server event)
+     */
+    userMapping: {},
+
+
+<span id='SATAR-method-initSocketIO'>    /**
+</span>     * Initializes the socket.io communication
+     *
+     * @return void
+     */
+    initSocketIO: function() {
+
+        this.socket = io.connect();
+
+        // Handle user data
+        this.socket.on('usermapping', function(userMapping) {
+            SATAR.userMapping = userMapping;
+        });
+
+        // Handle current race report (statefulness, reply of current state)
+        this.socket.on('currentracereport', function(currentRaceReport) {
+
+            // If there were an currently _active_ race started in the past...
+            if (currentRaceReport &amp;&amp; currentRaceReport.race &amp;&amp; currentRaceReport.race.name) {
+
+                // Apply this current race state visually
+                SATAR.RaceTracker.applyCurrentRaceState(currentRaceReport);
+            }
+        });
+
+        // Handle incoming node emits
+        this.socket.on('node', function(nodeEvent) {
+
+            // Handle new nodes added
+            SATAR.RaceTracker.addNode(nodeEvent);
+
+        }.bind(SATAR.RaceTracker));
+
+        // Bind race management events received from
+        // backend when another web client fired these
+        this.socket.on('racestarted', function(race) {
+
+            // Set current race name
+            this.currentRaceName = race.name;
+
+            // Show the UI in race started state
+            // without doing anything else
+            this.onStartRaceClick(true);
+
+        }.bind(SATAR.RaceTracker));
+
+        // Bind to remote racefinished event to show the
+        // race result window (statistics) even if another
+        // web client stopped the race measurement
+        this.socket.on('racefinished', function(raceStatistics) {
+
+            // Show the UI in race finished state
+            // without doing anything else
+            this.onStopRaceClick(true);
+
+            // Is given on remote event
+            if (raceStatistics) {
+
+                // Show modal race statistics window
+                SATAR.RaceResult.show(raceStatistics);
+            }
+
+        }.bind(SATAR.RaceTracker));
+    },
+
+
+<span id='SATAR-method-getNameForParticipant'>    /**
+</span>     * Returns the participant concatinated name for id
+     *
+     * @param {Number} participantId Participant id
+     * @return {String}
+     */
+    getNameForParticipant: function(participantId) {
+
+        var currentParticipant = null;
+        for (var participant in SATAR.userMapping) {
+
+            currentParticipant = SATAR.userMapping[participant];
+
+            if (parseInt(currentParticipant.participant_id) === participantId) {
+                return currentParticipant.firstname + ' ' + currentParticipant.lastname;
+            }
+        }
+        return 'Unknown participant';
+    },
+
+
+<span id='SATAR-method-launch'>    /**
+</span>     * Launch the web app
+     * @return void
+     */
+    launch: function() {
+
+        Ext.onReady(function() {
+
+            // Init socket.io
+            SATAR.initSocketIO();
+
+            // Handle UI interactions
+            SATAR.RaceTracker.init();
+        });
+    }()
+});</pre>
+</body>
+</html>
